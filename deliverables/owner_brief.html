@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner Rep Prep Companion — Brief Mockup</title>
+<style>
+  :root {
+    --accent: #0E7C66;
+    --accent-tint: rgba(14, 124, 102, 0.05);
+    --accent-tint-strong: rgba(14, 124, 102, 0.12);
+    --text: #1a1a1a;
+    --text-soft: #555;
+    --text-faint: #888;
+    --border: #e3e3e3;
+    --border-soft: #ececec;
+    --bg: #ffffff;
+    --bg-soft: #fafafa;
+    --bg-quote: #f5f7f6;
+    --green: #10693e;
+    --red: #b32316;
+    --amber: #7a4900;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--text); background: var(--bg-soft);
+    font-size: 15px; line-height: 1.5;
+  }
+  .page { max-width: 640px; margin: 0 auto; padding: 24px 20px 60px 20px; }
+
+  .banner {
+    background: var(--accent-tint);
+    border: 1px solid var(--accent-tint-strong);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    margin-bottom: 18px;
+  }
+
+  h1.title { font-size: 1.2rem; font-weight: 600; margin: 0 0 4px 0; }
+  .subtitle { font-size: 0.85rem; color: var(--text-soft); margin: 0 0 16px 0; }
+
+  .selector-row {
+    display: flex; align-items: center; gap: 10px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .selector-row label {
+    font-size: 0.75rem; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .selector-row select {
+    flex: 1; min-width: 0;
+    font-family: inherit; font-size: 0.92rem;
+    padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: white;
+  }
+
+  .panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  .ctx-head { font-weight: 600; font-size: 1rem; margin: 0; }
+  .ctx-sub { font-size: 0.85rem; color: var(--text-soft); margin: 2px 0 12px 0; }
+  .ctx-grid {
+    display: grid; grid-template-columns: 130px 1fr;
+    row-gap: 4px; column-gap: 12px;
+    font-size: 0.85rem;
+  }
+  .ctx-grid .k { color: var(--text-soft); }
+  .pill {
+    display: inline-block; padding: 1px 8px; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 600;
+    background: #d4f0de; color: var(--green);
+  }
+  .pill.medium { background: #fff3d4; color: var(--amber); }
+  .pill.low    { background: #f5d4d4; color: var(--red); }
+  .meta-note {
+    font-size: 0.74rem; color: var(--text-faint);
+    font-style: italic; margin-top: 10px;
+  }
+
+  /* Phase cards */
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--bg-soft);
+    border-bottom: 1px solid transparent;
+    transition: background 0.12s ease;
+  }
+  .card-header:hover { background: #f4f5f4; }
+  .card.open .card-header {
+    background: white;
+    border-bottom-color: var(--border-soft);
+  }
+  .card-header .phase {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    font-weight: 600;
+  }
+  .card.open .card-header .phase {
+    color: var(--accent);
+  }
+  .chevron {
+    font-size: 0.8rem; color: var(--text-faint);
+    transition: transform 0.18s ease;
+  }
+  .card.open .chevron { transform: rotate(180deg); color: var(--accent); }
+  .card-body {
+    display: none;
+    padding: 14px 16px 16px 16px;
+  }
+  .card.open .card-body { display: block; }
+
+  .card-body .label-line {
+    font-size: 0.83rem;
+    color: var(--text-soft);
+    margin: 0 0 6px 0;
+  }
+  .card-body .rationale {
+    font-size: 0.83rem;
+    color: var(--text-soft);
+    margin: 8px 0 0 0;
+  }
+  .verbatim {
+    background: var(--bg-quote);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 6px 0;
+    white-space: pre-line;
+  }
+  .linked-tag {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.45;
+  }
+  .linked-tag .marker { color: var(--accent); margin-right: 4px; font-style: normal; }
+
+  /* Sub-collapsible inside cards */
+  .sub-toggle {
+    background: var(--bg-soft);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 12px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.83rem;
+    color: var(--text-soft);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sub-toggle:hover { background: #f4f5f4; }
+  .sub-toggle .arr {
+    transition: transform 0.15s ease;
+    font-size: 0.75rem;
+  }
+  .sub-content {
+    display: none;
+    padding: 10px 12px 4px 12px;
+    border: 1px solid var(--border-soft);
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    margin-top: -7px;
+    background: #fcfcfc;
+  }
+  .sub-open .sub-content { display: block; }
+  .sub-open > .sub-toggle {
+    border-radius: 6px 6px 0 0;
+    border-bottom-color: transparent;
+  }
+  .sub-open > .sub-toggle .arr { transform: rotate(180deg); }
+  .sub-item { margin-bottom: 8px; }
+  .sub-item:last-child { margin-bottom: 0; }
+  .sub-item .friction-label {
+    font-size: 0.78rem; color: var(--text-soft);
+    margin-bottom: 4px;
+  }
+  .sub-item .friction-label strong { color: var(--text); font-weight: 600; }
+
+  /* Feedback */
+  .feedback {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+  }
+  .feedback-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .feedback-row .ask {
+    font-size: 0.9rem; color: var(--text); margin-right: 6px;
+    font-weight: 500;
+  }
+  .feedback-row .fb-btn {
+    background: white; border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 12px;
+    font-family: inherit; font-size: 0.88rem; cursor: pointer;
+    line-height: 1.2;
+  }
+  .feedback-row .fb-btn:hover { background: var(--bg-soft); }
+  .feedback-row .fb-btn.up.selected { border-color: var(--green); background: #d4f0de; }
+  .feedback-row .fb-btn.down.selected { border-color: var(--red); background: #f5d4d4; }
+  .feedback input.fb-comment {
+    margin-top: 8px;
+    width: 100%;
+    font-family: inherit; font-size: 0.85rem;
+    padding: 6px 10px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: white;
+  }
+  .fb-ack {
+    font-size: 0.78rem; color: var(--text-faint);
+    font-style: italic;
+    margin-top: 8px;
+    display: none;
+  }
+  .fb-ack.show { display: block; }
+  .fb-storage-note {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+  }
+  footer a { color: var(--text-soft); cursor: pointer; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: white; border-radius: 8px;
+    padding: 24px 26px; max-width: 520px; width: 90%;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    font-size: 0.9rem; color: var(--text-soft);
+  }
+  .modal h3 { margin: 0 0 12px 0; color: var(--text); }
+  .modal ul { padding-left: 20px; margin: 8px 0; }
+  .modal .close {
+    float: right; background: transparent; border: 0;
+    font-size: 1.2rem; cursor: pointer; color: var(--text-soft);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="banner">
+  Prototype mockup — in production, this lives as an upgrade to Salesloft's existing PCR panel rather than a standalone tool.
+</div>
+
+<h1 class="title">Rep Prep Companion</h1>
+<p class="subtitle">Pre-call brief in four phases. Tap a card to expand. The card most likely to matter on this call is open by default.</p>
+
+<div class="selector-row">
+  <label for="rest-select">Restaurant</label>
+  <select id="rest-select"></select>
+</div>
+
+<div class="panel" id="ctx-panel"></div>
+
+<div id="cards-container"></div>
+
+<div class="feedback">
+  <div class="feedback-row">
+    <span class="ask">Was this brief helpful for this call?</span>
+    <button class="fb-btn up" data-fb="up">👍 helpful</button>
+    <button class="fb-btn down" data-fb="down">👎 not helpful</button>
+  </div>
+  <input class="fb-comment" type="text" placeholder="Optional comment…">
+  <div class="fb-ack" id="fb-ack">Thanks — feedback like this refines the brief over time. In production, ratings flow into the dashboard's signal.</div>
+  <div class="fb-storage-note">Stored in-memory for this prototype. Not persisted.</div>
+</div>
+
+<footer>
+  Prototype mockup · 10 demo restaurants · <a id="about-link">About</a>
+</footer>
+
+</div>
+
+<div class="modal-backdrop" id="about-modal">
+  <div class="modal">
+    <button class="close" id="about-close">×</button>
+    <h3>About this prototype</h3>
+    <p>This is a static mockup of the Rep Prep Companion. In production:</p>
+    <ul>
+      <li>Restaurant data auto-populates from PCR (Salesloft side panel)</li>
+      <li>Suggested openers, questions, and friction handlers generate dynamically based on patterns from continuous call scoring</li>
+      <li>This functionality lives inside PCR rather than as a standalone tool</li>
+      <li>Rep feedback (👍 / 👎) flows back into prompt refinement and dashboard signal</li>
+    </ul>
+    <p>The 10 restaurants here are illustrative. Production runs across the full call queue with content tuned per call type, segment, and individual rep.</p>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   DATA — four cards per restaurant
+   ================================================================= */
+
+const restaurants = [
+  {
+    id: "rest_001", name: "Buffalo Joe's Wings", cuisine: "American (Wings)",
+    locations: 2, city: "Hillsborough, NC",
+    third_party: ["DoorDash", "Uber Eats"], owner_name: "Mike Henderson",
+    lead_source: "cold outreach", last_interaction: "no prior contact",
+    google_position: "#4 for \"best wings Hillsborough\"",
+    fit_tier: "high", call_type: "cold_outreach",
+    default_expanded_phase: "pitch",
+    opening: {
+      suggested_opener: "Hi Mike, this is [rep name] from Owner. I was looking at Buffalo Joe's online — you're showing up #4 when I search for best wings in Hillsborough, behind a couple of places that don't have nearly your review counts. Quick question — got a couple minutes?",
+      linked_behaviors: ["research_hook_used = specific_findings · Differentiator (+28pts)"]
+    },
+    discovery: {
+      primary_question: "Where are most of your orders coming from right now? Walk-ins, third-party apps, or are you running your own online ordering?",
+      primary_rationale: "Surfaces the third-party dependence quickly, which sets up the rest of the conversation.",
+      primary_linked: "discovery_question_asked = before_pitch · +13.9pts · Possible differentiator",
+      alternates: [
+        {q: "Do you spend anything on marketing right now? Even a little? What's working?"},
+        {q: "How busy is your kitchen during peak — are you turning orders away?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Third-party platform objection (DoorDash + Uber Eats commissions).",
+      primary_handler: "You're probably paying around $1,200–1,500 a month in commissions to DoorDash on your volume. Owner is $349 a month flat — and you keep ownership of the customer. Want me to walk through the actual math on your numbers?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · +23.6pts · Differentiator",
+        "commission_math_specific = specific_dollars · +18.6pts · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "\"We tried something like this before.\"",
+          handler: "Got it — that happens a lot. What specifically didn't work? Was it the tech, or volume not picking up?",
+          linked: "tried_before_objection_handled · candidate"
+        },
+        {
+          friction: "POS / integration question (e.g., \"How does this work with Toast?\")",
+          handler: "Toast integration is solid — orders, menu, customer data all sync. Quick question first: are you using Toast for just POS, or also online ordering today?",
+          linked: "rep_used_prospect_answer = explicit · +27.1pts · Differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Tuesday at 2pm or Wednesday at 10am — which works better? I'll send a calendar invite and we'll dig into your numbers specifically. Not trying to make you decide right now, just want to show you what we do.",
+      primary_linked: "specific_time_proposed = specific · +32.6pts · Differentiator",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Want me to send some info to your email and follow up next week, or would 15 minutes on Tuesday work better?" }
+      ]
+    }
+  },
+
+  {
+    id: "rest_002", name: "El Sabor Mexicano", cuisine: "Mexican",
+    locations: 1, city: "Austin, TX",
+    third_party: ["DoorDash"], owner_name: "Carla Vega",
+    lead_source: "cold outreach", last_interaction: "no prior contact",
+    google_position: "#7 for \"mexican austin\"",
+    fit_tier: "high", call_type: "cold_outreach",
+    default_expanded_phase: "pitch",
+    opening: {
+      suggested_opener: "Hi Carla, this is [rep name] from Owner. I was looking at El Sabor — you're showing up #7 for mexican in Austin, behind a couple of places with way fewer reviews than you have. Got a quick minute?",
+      linked_behaviors: ["research_hook_used = specific_findings · Differentiator (+28pts)"]
+    },
+    discovery: {
+      primary_question: "Where are most of your orders coming from these days — walk-ins, DoorDash, or somewhere else?",
+      primary_rationale: "Confirms the DoorDash dependence and opens the math conversation.",
+      primary_linked: "discovery_question_asked = before_pitch · +13.9pts · Possible differentiator",
+      alternates: [
+        {q: "What's your slowest day right now — and what do you think is driving that?"},
+        {q: "If you could fix one thing about how customers find you, what would it be?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "DoorDash objection — \"they bring me customers.\"",
+      primary_handler: "They do bring traffic, fair point. But on your volume, that's probably costing around $900 a month in commissions. Owner is $349 flat. If even half those orders came direct, you're netting more than what we cost. Want to do the math on your actual numbers?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · +23.6pts · Differentiator",
+        "commission_math_specific = specific_dollars · +18.6pts · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "\"We've tried online ordering before.\"",
+          handler: "Yeah, common version of this. Real quick — was it that the orders didn't come, or the math just didn't work out?",
+          linked: "tried_before_objection_handled · candidate"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Thursday at 11am or Friday at 2pm — which is easier? I'll send the invite and run through the actual commission math on your numbers.",
+      primary_linked: "specific_time_proposed = specific · +32.6pts · Differentiator",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "I can send you a one-pager with the math first if you'd rather see it before booking time — but a quick call's faster." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_003", name: "Nonna's Pizza", cuisine: "Italian",
+    locations: 1, city: "Brooklyn, NY",
+    third_party: ["DoorDash", "GrubHub"], owner_name: "Tony Marchetti",
+    lead_source: "form fill (3 days ago)", last_interaction: "form submitted",
+    google_position: "#2 for \"pizza Park Slope\"",
+    fit_tier: "high", call_type: "inbound_followup",
+    default_expanded_phase: "discovery",
+    opening: {
+      suggested_opener: "Hi Tony, this is [rep name] from Owner — saw you submitted a request a few days back. Before I jump into anything, mind if I ask what made you reach out?",
+      linked_behaviors: ["discovery_question_asked = before_pitch · Differentiator in inbound (+27.1pts)"]
+    },
+    discovery: {
+      primary_question: "What made you reach out — is there a specific thing you're trying to fix, or were you mostly just exploring?",
+      primary_rationale: "Inbound leads converted at 42% when reps qualified before pitching, vs 15% when they didn't. Slowing down here is the move.",
+      primary_linked: "discovery_question_asked = before_pitch · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        {q: "How are most of your orders coming in right now — walk-ins, the apps, or your own site?"},
+        {q: "What's working well that you don't want to mess with?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Third-party platform commissions (DoorDash + GrubHub).",
+      primary_handler: "On a single-location pizza place doing your volume across DoorDash and GrubHub, the commissions are probably running around $1,800 a month. Owner is $349 flat. Want me to walk through the actual math on your orders when we meet?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · Differentiator",
+        "commission_math_specific = specific_dollars · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "Brand control — \"will my site look like mine or generic?\"",
+          handler: "Your site, not a marketplace. Logo, photos, your menu, your domain. We don't put you next to competitors.",
+          linked: "rep_used_prospect_answer = explicit · Differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Thursday at 11am or later in the week — what's easier? I'll send the invite and we'll dig into the actual numbers on your orders.",
+      primary_linked: "specific_time_proposed = specific · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "I can shoot over a quick example based on a comparable shop nearby first if that's helpful." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_004", name: "Saigon Bowl", cuisine: "Vietnamese",
+    locations: 1, city: "Portland, OR",
+    third_party: ["DoorDash", "Uber Eats"], owner_name: "Linh Tran",
+    lead_source: "cold outreach", last_interaction: "no prior contact",
+    google_position: "#11 for \"pho Portland\"",
+    fit_tier: "medium", call_type: "cold_outreach",
+    default_expanded_phase: "pitch",
+    opening: {
+      suggested_opener: "Hi Linh, this is [rep name] from Owner. I was checking out Saigon Bowl — you've got really strong reviews but you're at #11 for pho in Portland, behind some places with weaker ratings. Got a quick minute?",
+      linked_behaviors: ["research_hook_used = specific_findings · Differentiator (+28pts)"]
+    },
+    discovery: {
+      primary_question: "Where are most of your orders coming from — DoorDash and Uber Eats, walk-ins, or somewhere else?",
+      primary_rationale: "Quickly maps the third-party dependence so the math conversation is anchored to real numbers.",
+      primary_linked: "discovery_question_asked = before_pitch · +13.9pts · Possible differentiator",
+      alternates: [
+        {q: "What share of your business is delivery vs dine-in right now?"},
+        {q: "If a customer Googles pho in Portland today, are they finding you?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Third-party math — DoorDash + Uber Eats stacked commissions.",
+      primary_handler: "On both DoorDash and Uber Eats, you're probably paying around $1,300–1,600 a month in commissions combined. Owner is $349 flat — same orders but direct, with the customer relationship coming back to you. Want to do the actual math when we meet?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · +23.6pts · Differentiator",
+        "commission_math_specific = specific_dollars · +18.6pts · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "\"We tried our own online ordering before, didn't really work.\"",
+          handler: "Yeah, most common version of this. Was it through your POS or a separate site? And what made you stop?",
+          linked: "tried_before_objection_handled · candidate"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Tuesday at 1pm or Thursday morning — which works? I'll send the invite and we'll run through your specific numbers.",
+      primary_linked: "specific_time_proposed = specific · +32.6pts · Differentiator",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Or I can send a one-pager today and follow up next week if you'd rather see it first." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_005", name: "Sunny Side Cafe", cuisine: "American",
+    locations: 3, city: "Denver, CO",
+    third_party: ["DoorDash", "GrubHub"], owner_name: "Pat Kowalski",
+    lead_source: "form fill (1 day ago)", last_interaction: "form submitted",
+    google_position: "#3 for \"breakfast Denver\"",
+    fit_tier: "high", call_type: "inbound_followup",
+    default_expanded_phase: "discovery",
+    opening: {
+      suggested_opener: "Hi Pat, this is [rep name] from Owner — I saw you submitted a request yesterday. Before I dive in, mind if I ask what made you reach out?",
+      linked_behaviors: ["discovery_question_asked = before_pitch · Differentiator in inbound (+27.1pts)"]
+    },
+    discovery: {
+      primary_question: "What's the situation across the three locations — same setup at each, or are they running differently?",
+      primary_rationale: "Multi-location complexity is the differentiator here. Surfacing whether POS and ordering are unified or fragmented sets up everything else.",
+      primary_linked: "rep_used_prospect_answer = explicit · +27.1pts · Differentiator",
+      alternates: [
+        {q: "Which of the three is hardest to manage right now? Why?"},
+        {q: "If you fixed one operations thing across all three locations, what would it be?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Multi-location integration — does this unify across all three?",
+      primary_handler: "Multi-location is one of the things Owner handles cleanest. Single dashboard, location-specific menus and pricing, orders route automatically. Quick question before I get specific: are all three on the same POS today, or is it split?",
+      primary_linked: [
+        "rep_used_prospect_answer = explicit · +27.1pts · Differentiator"
+      ],
+      alternates: [
+        {
+          friction: "Third-party commissions across 3 locations.",
+          handler: "Across DoorDash and GrubHub for three locations, the commissions are likely running $4–5K a month combined. Owner is $349 a month flat at the brand level. Want me to do the actual math when we meet?",
+          linked: "commission_math_specific = specific_dollars · Possible differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Wednesday at 11am or Friday at 9am — which works? I'll send the invite and we'll set up a walkthrough scoped to your three locations.",
+      primary_linked: "specific_time_proposed = specific · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Want me to send a multi-location demo link first so you can poke around before we meet?" }
+      ]
+    }
+  },
+
+  {
+    id: "rest_006", name: "Akita Sushi", cuisine: "Japanese",
+    locations: 1, city: "Seattle, WA",
+    third_party: ["Uber Eats"], owner_name: "Hiro Sato",
+    lead_source: "cold outreach", last_interaction: "no prior contact",
+    google_position: "#8 for \"sushi Capitol Hill\"",
+    fit_tier: "medium", call_type: "cold_outreach",
+    default_expanded_phase: "pitch",
+    opening: {
+      suggested_opener: "Hi Hiro, this is [rep name] from Owner. I was looking at Akita — you're at #8 for sushi on Capitol Hill but your review counts are stronger than most of what's above you. Got a quick minute?",
+      linked_behaviors: ["research_hook_used = specific_findings · Differentiator (+28pts)"]
+    },
+    discovery: {
+      primary_question: "Where are most of your orders coming from — Uber Eats, walk-ins, somewhere else?",
+      primary_rationale: "Single-platform third-party makes the math cleaner; this question gets you the numbers fast.",
+      primary_linked: "discovery_question_asked = before_pitch · +13.9pts · Possible differentiator",
+      alternates: [
+        {q: "What share of your delivery business is repeat vs first-time?"},
+        {q: "When customers find you on Google, are they ordering through your site or going to Uber Eats?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Uber Eats objection — \"they bring me customers.\"",
+      primary_handler: "They do bring traffic. Here's what most owners miss though — at your volume, that traffic is probably costing around $700 a month in commissions. If even half came direct, you'd net more than Owner costs to run. Want to do the math on your actual numbers?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · +23.6pts · Differentiator",
+        "commission_math_specific = specific_dollars · +18.6pts · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "POS question — \"how does this work with our system?\"",
+          handler: "What POS are you on? Owner integrates with the major ones — orders sync, menu sync, customer data sync. Tell me your POS and I'll tell you what's automatic and what isn't.",
+          linked: "rep_used_prospect_answer = explicit · +27.1pts · Differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Wednesday at 3pm or Thursday morning — which works? I'll send the invite and we'll walk the math.",
+      primary_linked: "specific_time_proposed = specific · +32.6pts · Differentiator",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Or shoot you a quick comparison first if that's easier — but a 15-min call covers more ground." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_007", name: "The Burger Joint", cuisine: "American",
+    locations: 2, city: "Nashville, TN",
+    third_party: ["DoorDash", "Uber Eats", "GrubHub"], owner_name: "Sam Davis",
+    lead_source: "cold outreach", last_interaction: "no prior contact",
+    google_position: "#6 for \"burgers Nashville\"",
+    fit_tier: "high", call_type: "cold_outreach",
+    default_expanded_phase: "pitch",
+    opening: {
+      suggested_opener: "Hi Sam, this is [rep name] from Owner. I was looking at The Burger Joint — you're #6 in Nashville for burgers and on three different delivery apps already. Got a quick minute?",
+      linked_behaviors: ["research_hook_used = specific_findings · Differentiator (+28pts)"]
+    },
+    discovery: {
+      primary_question: "Three apps is a lot — which one's actually pulling its weight, and which one are you on out of habit?",
+      primary_rationale: "Names a real frustration most multi-platform operators feel; opens the door to consolidation talk.",
+      primary_linked: "discovery_question_asked = before_pitch · +13.9pts · Possible differentiator",
+      alternates: [
+        {q: "What's the split right now — are direct orders even on the table, or is everything coming through the apps?"},
+        {q: "How much time per week is staff spending managing the three platforms?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Three-platform commission stack (DoorDash + Uber Eats + GrubHub).",
+      primary_handler: "On three apps across two locations, you're likely paying $2,500–3,500 a month in commissions combined. Owner is $349 a month flat at the brand level — same orders, direct, customer data comes back to you. Want me to do the actual math?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · +23.6pts · Differentiator",
+        "commission_math_specific = specific_dollars · +18.6pts · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "\"We've looked at this kind of thing before.\"",
+          handler: "Fair. What specifically didn't pan out — was it that the website didn't drive traffic, or the integration with everything else got messy?",
+          linked: "tried_before_objection_handled · candidate"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Tuesday at 2pm or Friday at 10am — which works? I'll send the invite and we'll walk the math across both locations.",
+      primary_linked: "specific_time_proposed = specific · +32.6pts · Differentiator",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Or send the comparison first if you'd rather see numbers before scheduling." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_008", name: "Mama's Soul Kitchen", cuisine: "Southern",
+    locations: 1, city: "Atlanta, GA",
+    third_party: ["DoorDash"], owner_name: "Lula Williams",
+    lead_source: "referral (rest_011)", last_interaction: "form submitted",
+    google_position: "#5 for \"soul food Atlanta\"",
+    fit_tier: "high", call_type: "inbound_followup",
+    default_expanded_phase: "close",
+    opening: {
+      suggested_opener: "Hi Lula, this is [rep name] from Owner — your friend over at the other spot mentioned you might want to chat. Before I get into anything, mind if I ask what's making you look at this now?",
+      linked_behaviors: [
+        "referral_specificity = detailed · +19.6pts · Differentiator",
+        "discovery_question_asked = before_pitch · Differentiator (inbound)"
+      ]
+    },
+    discovery: {
+      primary_question: "What's making you look at this now — is there something specific you're trying to solve?",
+      primary_rationale: "Referral leads are warm — the move is to qualify the trigger, not pitch.",
+      primary_linked: "discovery_question_asked = before_pitch · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        {q: "What's working well right now that you don't want to mess with?"},
+        {q: "How much of your business is repeat vs new customers?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Brand / customer-relationship concern.",
+      primary_handler: "Owner runs on your domain — your name, photos, menu. We're not putting you next to competitors. Customer data stays yours. That's the part most folks coming from DoorDash care about most.",
+      primary_linked: [
+        "rep_used_prospect_answer = explicit · +27.1pts · Differentiator"
+      ],
+      alternates: [
+        {
+          friction: "DoorDash commissions.",
+          handler: "On your DoorDash volume, commissions are probably around $800–1,000 a month. Owner is $349 flat. We can run the actual math when we meet.",
+          linked: "commission_math_specific = specific_dollars · Possible differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Want to lock in Tuesday at 11am or Wednesday at 2pm? I'll send the invite. Since [referrer] already vouched for us, the demo can go right to the parts you actually care about.",
+      primary_rationale: "Referral leads close cleanest with a specific time and a nod to the warm intro.",
+      primary_linked: "specific_time_proposed = specific · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Or I can send a quick walkthrough video first if that fits better — but 20 minutes will get you further." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_009", name: "Mediterranean Grill", cuisine: "Mediterranean",
+    locations: 1, city: "Boston, MA",
+    third_party: ["GrubHub"], owner_name: "Yusuf Karim",
+    lead_source: "cold outreach", last_interaction: "no prior contact",
+    google_position: "#9 for \"mediterranean Boston\"",
+    fit_tier: "medium", call_type: "cold_outreach",
+    default_expanded_phase: "pitch",
+    opening: {
+      suggested_opener: "Hi Yusuf, this is [rep name] from Owner. I was looking at Mediterranean Grill — you're at #9 for Mediterranean in Boston but your reviews suggest you should be ranking higher. Got a quick minute?",
+      linked_behaviors: ["research_hook_used = specific_findings · Differentiator (+28pts)"]
+    },
+    discovery: {
+      primary_question: "Where are most of your orders coming from — GrubHub, walk-ins, or your own site?",
+      primary_rationale: "Single-platform third-party — a clean math conversation if you have the volume.",
+      primary_linked: "discovery_question_asked = before_pitch · +13.9pts · Possible differentiator",
+      alternates: [
+        {q: "Are you running any kind of direct online ordering today?"},
+        {q: "What's your busiest delivery window? How are those orders coming in?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "GrubHub commissions.",
+      primary_handler: "On GrubHub at your volume, commissions are probably running around $900 a month. Owner is $349 flat — and the customer relationship comes back to you. Want me to do the actual math when we meet?",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · +23.6pts · Differentiator",
+        "commission_math_specific = specific_dollars · +18.6pts · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "\"We've thought about doing our own ordering.\"",
+          handler: "Most owners get stuck on the same thing — building it themselves takes too long, third-party services are expensive. Owner sits in between. Want to see what your version would look like?",
+          linked: "rep_used_prospect_answer = explicit · Differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Wednesday morning or Friday at 1pm — which works? I'll send the invite and walk through what your numbers actually look like.",
+      primary_linked: "specific_time_proposed = specific · +32.6pts · Differentiator",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Send a comparison first? Or 15 minutes on Wednesday and I'll walk you through it live." }
+      ]
+    }
+  },
+
+  {
+    id: "rest_010", name: "Spice Garden", cuisine: "Indian",
+    locations: 1, city: "Chicago, IL",
+    third_party: ["DoorDash", "Uber Eats"], owner_name: "Priya Sharma",
+    lead_source: "form fill (2 days ago)", last_interaction: "form submitted",
+    google_position: "#3 for \"indian River North\"",
+    fit_tier: "high", call_type: "inbound_followup",
+    default_expanded_phase: "discovery",
+    opening: {
+      suggested_opener: "Hi Priya, this is [rep name] from Owner — I saw you submitted a request a couple days ago. Before I get specific, mind if I ask what made you reach out?",
+      linked_behaviors: ["discovery_question_asked = before_pitch · Differentiator in inbound (+27.1pts)"]
+    },
+    discovery: {
+      primary_question: "What made you reach out — is there a specific thing you're trying to fix, or were you just exploring?",
+      primary_rationale: "Inbound leads converted at 42% when reps qualified before pitching, vs 15% when they didn't.",
+      primary_linked: "discovery_question_asked = before_pitch · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        {q: "Where are most of your orders coming from right now — the apps, walk-ins, or somewhere else?"},
+        {q: "What's working that you don't want to change?"}
+      ]
+    },
+    pitch: {
+      primary_friction: "Two-platform commission stack (DoorDash + Uber Eats).",
+      primary_handler: "On both DoorDash and Uber Eats at your River North volume, commissions are probably running around $1,400 a month combined. Owner is $349 flat. We can do the actual math on your numbers when we meet.",
+      primary_linked: [
+        "third_party_handling = proactive_reframe · Differentiator",
+        "commission_math_specific = specific_dollars · Possible differentiator"
+      ],
+      alternates: [
+        {
+          friction: "Brand / customer ownership.",
+          handler: "Your domain, your name, your customer data. Owner is white-label — we don't put you next to competitors the way the apps do.",
+          linked: "rep_used_prospect_answer = explicit · Differentiator"
+        }
+      ]
+    },
+    close: {
+      primary_close: "Friday at 10am or earlier in the week if better? I'll send the invite and we'll dig into your actual order numbers.",
+      primary_linked: "specific_time_proposed = specific · +27.1pts · Differentiator (inbound)",
+      alternates: [
+        { framing: "Lower-pressure framing", text: "Want me to send a quick demo link first? Then we can do 15 minutes after you've poked around." }
+      ]
+    }
+  }
+];
+
+const PHASES = [
+  {key: "opening",   label: "Opening"},
+  {key: "discovery", label: "Discovery"},
+  {key: "pitch",     label: "Pitch"},
+  {key: "close",     label: "Close"}
+];
+
+/* =================================================================
+   STATE
+   ================================================================= */
+
+let currentRest = null;
+let currentExpanded = null; // phase key
+let feedback = {}; // { restId: { rating, comment } }
+
+/* =================================================================
+   HELPERS
+   ================================================================= */
+
+function fitPill(tier) {
+  const cls = tier === "high" ? "" : (tier === "medium" ? "medium" : "low");
+  return `<span class="pill ${cls}">${tier.charAt(0).toUpperCase() + tier.slice(1)}</span>`;
+}
+
+function leadSourceLine(r) {
+  if (r.lead_source === "cold outreach") return "Cold outreach (no prior contact)";
+  if (r.lead_source.startsWith("form fill")) return `Inbound — ${r.lead_source}`;
+  if (r.lead_source.startsWith("referral")) return `Referral (${r.lead_source.replace("referral ", "")})`;
+  return r.lead_source;
+}
+
+function linkedTag(text) {
+  return `<span class="linked-tag"><span class="marker">⓵</span>Linked: ${text}</span>`;
+}
+
+function multiLinkedTag(arr) {
+  return arr.map(t => linkedTag(t)).join("");
+}
+
+/* =================================================================
+   RENDER
+   ================================================================= */
+
+function renderContext(r) {
+  document.getElementById("ctx-panel").innerHTML = `
+    <p class="ctx-head">${r.name} · ${r.locations} location${r.locations === 1 ? "" : "s"} · ${r.city}</p>
+    <p class="ctx-sub">${r.cuisine} · Owner: ${r.owner_name}</p>
+    <div class="ctx-grid">
+      <div class="k">Lead source:</div>     <div class="v">${leadSourceLine(r)}</div>
+      <div class="k">Third-party:</div>     <div class="v">${r.third_party.join(", ")}</div>
+      <div class="k">Google ranking:</div>  <div class="v">${r.google_position}</div>
+      <div class="k">Fit tier:</div>        <div class="v">${fitPill(r.fit_tier)}</div>
+    </div>
+    <p class="meta-note">In production, all fields auto-populate from PCR. Some values shown here are illustrative for demo purposes — Google ranking and fit tier come from existing Owner systems.</p>
+  `;
+}
+
+function renderOpening(r) {
+  const o = r.opening;
+  return `
+    <p class="label-line">Suggested opener (verbatim):</p>
+    <div class="verbatim">${o.suggested_opener}</div>
+    ${(o.linked_behaviors || []).map(t => linkedTag(t)).join("")}
+  `;
+}
+
+function renderDiscovery(r) {
+  const d = r.discovery;
+  const altsHTML = (d.alternates || []).map(a =>
+    `<div class="sub-item"><div class="verbatim">${a.q}</div></div>`
+  ).join("");
+  return `
+    <p class="label-line">Primary question:</p>
+    <div class="verbatim">${d.primary_question}</div>
+    ${d.primary_rationale ? `<p class="rationale">Why this question first: ${d.primary_rationale}</p>` : ""}
+    ${linkedTag(d.primary_linked)}
+    ${(d.alternates && d.alternates.length) ? `
+    <div class="sub" data-sub>
+      <div class="sub-toggle"><span>Alternate questions</span><span class="arr">▾</span></div>
+      <div class="sub-content">${altsHTML}</div>
+    </div>` : ""}
+  `;
+}
+
+function renderPitch(r) {
+  const p = r.pitch;
+  const altsHTML = (p.alternates || []).map(a => `
+    <div class="sub-item">
+      <div class="friction-label"><strong>Friction:</strong> ${a.friction}</div>
+      <div class="verbatim">${a.handler}</div>
+      ${linkedTag(a.linked)}
+    </div>
+  `).join("");
+  return `
+    <p class="label-line">Most likely friction: <strong>${p.primary_friction}</strong></p>
+    <p class="label-line" style="margin-top: 10px;">Verbatim handler:</p>
+    <div class="verbatim">${p.primary_handler}</div>
+    ${multiLinkedTag(p.primary_linked || [])}
+    ${(p.alternates && p.alternates.length) ? `
+    <div class="sub" data-sub>
+      <div class="sub-toggle"><span>Other likely frictions</span><span class="arr">▾</span></div>
+      <div class="sub-content">${altsHTML}</div>
+    </div>` : ""}
+  `;
+}
+
+function renderClose(r) {
+  const c = r.close;
+  const altsHTML = (c.alternates || []).map(a => `
+    <div class="sub-item">
+      <div class="friction-label"><strong>${a.framing}:</strong></div>
+      <div class="verbatim">${a.text}</div>
+    </div>
+  `).join("");
+  return `
+    <p class="label-line">Suggested close:</p>
+    <div class="verbatim">${c.primary_close}</div>
+    ${linkedTag(c.primary_linked)}
+    ${(c.alternates && c.alternates.length) ? `
+    <div class="sub" data-sub>
+      <div class="sub-toggle"><span>Alternate close</span><span class="arr">▾</span></div>
+      <div class="sub-content">${altsHTML}</div>
+    </div>` : ""}
+  `;
+}
+
+const PHASE_RENDERERS = {
+  opening: renderOpening,
+  discovery: renderDiscovery,
+  pitch: renderPitch,
+  close: renderClose
+};
+
+function renderCards(r) {
+  const container = document.getElementById("cards-container");
+  container.innerHTML = PHASES.map(ph => `
+    <div class="card" data-phase="${ph.key}">
+      <div class="card-header">
+        <span class="phase">${ph.label}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="card-body">${PHASE_RENDERERS[ph.key](r)}</div>
+    </div>
+  `).join("");
+
+  // Wire card accordion
+  container.querySelectorAll(".card-header").forEach(h => {
+    h.addEventListener("click", () => {
+      const card = h.parentElement;
+      const phase = card.dataset.phase;
+      if (currentExpanded === phase) {
+        card.classList.remove("open");
+        currentExpanded = null;
+      } else {
+        container.querySelectorAll(".card").forEach(c => c.classList.remove("open"));
+        card.classList.add("open");
+        currentExpanded = phase;
+      }
+    });
+  });
+
+  // Wire sub-collapsibles
+  container.querySelectorAll("[data-sub]").forEach(sub => {
+    const toggle = sub.querySelector(".sub-toggle");
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      sub.classList.toggle("sub-open");
+    });
+  });
+
+  // Default expansion
+  currentExpanded = r.default_expanded_phase || null;
+  if (currentExpanded) {
+    const def = container.querySelector(`.card[data-phase="${currentExpanded}"]`);
+    if (def) def.classList.add("open");
+  }
+}
+
+function renderFeedbackState(r) {
+  document.querySelectorAll(".feedback .fb-btn").forEach(b => b.classList.remove("selected"));
+  document.getElementById("fb-ack").classList.remove("show");
+  const cmt = document.querySelector(".feedback .fb-comment");
+  cmt.value = "";
+  const fb = feedback[r.id];
+  if (fb) {
+    if (fb.rating) {
+      const btn = document.querySelector(`.feedback .fb-btn.${fb.rating}`);
+      if (btn) btn.classList.add("selected");
+      document.getElementById("fb-ack").classList.add("show");
+    }
+    if (fb.comment) cmt.value = fb.comment;
+  }
+}
+
+function renderAll() {
+  if (!currentRest) return;
+  renderContext(currentRest);
+  renderCards(currentRest);
+  renderFeedbackState(currentRest);
+}
+
+/* =================================================================
+   INIT
+   ================================================================= */
+
+function populateSelector() {
+  const sel = document.getElementById("rest-select");
+  sel.innerHTML = restaurants.map(r =>
+    `<option value="${r.id}">${r.name} — ${r.city}${r.id === "rest_001" ? " ★ hero" : ""}</option>`
+  ).join("");
+  sel.value = "rest_001";
+  sel.addEventListener("change", () => {
+    currentRest = restaurants.find(r => r.id === sel.value);
+    renderAll();
+  });
+}
+
+function setupFeedback() {
+  document.querySelectorAll(".feedback .fb-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (!currentRest) return;
+      const rating = btn.dataset.fb;
+      const isSelected = btn.classList.contains("selected");
+      document.querySelectorAll(".feedback .fb-btn").forEach(b => b.classList.remove("selected"));
+      feedback[currentRest.id] = feedback[currentRest.id] || {};
+      if (isSelected) {
+        feedback[currentRest.id].rating = null;
+        document.getElementById("fb-ack").classList.remove("show");
+      } else {
+        btn.classList.add("selected");
+        feedback[currentRest.id].rating = rating;
+        document.getElementById("fb-ack").classList.add("show");
+      }
+    });
+  });
+  const cmt = document.querySelector(".feedback .fb-comment");
+  cmt.addEventListener("input", () => {
+    if (!currentRest) return;
+    feedback[currentRest.id] = feedback[currentRest.id] || {};
+    feedback[currentRest.id].comment = cmt.value;
+  });
+}
+
+function setupModal() {
+  const modal = document.getElementById("about-modal");
+  document.getElementById("about-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    modal.classList.add("open");
+  });
+  document.getElementById("about-close").addEventListener("click", () => modal.classList.remove("open"));
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  populateSelector();
+  setupFeedback();
+  setupModal();
+  currentRest = restaurants[0];
+  renderAll();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment & credentials
+.env
+.env.local
+*.key
+
+# macOS
+.DS_Store
+
+# Dry-run / scratch outputs
+*.dryrun.csv
+*.tmp
+
+# IDE
+.vscode/
+.idea/
