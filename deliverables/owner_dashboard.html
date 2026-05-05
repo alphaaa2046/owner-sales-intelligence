@@ -101,6 +101,12 @@
   .insight .meta {
     font-size: 0.75rem; color: var(--text-faint); font-style: italic; margin-top: 8px;
   }
+  .insight #v2-insight p { margin: 0 0 10px 0; }
+  .insight #v2-insight p:last-child { margin-bottom: 0; }
+  .insight #v2-insight p.insight-meta {
+    font-size: 0.75rem; color: var(--text-faint); margin-top: 8px;
+  }
+  .insight #v2-insight p.insight-meta em { font-style: italic; }
 
   /* Call-type info icon + tooltip */
   .ct-info {
@@ -361,6 +367,7 @@
   table.behavior td.diff.pos { color: var(--green); }
   table.behavior td.diff.neg { color: var(--red); }
   table.behavior td.diff.neutral { color: var(--text-soft); }
+  table.behavior td.em-dash { color: var(--text-faint); }
   table.behavior tr:last-child td { border-bottom: 0; }
   .field-name {
     border-bottom: 1px dotted var(--text-faint);
@@ -662,7 +669,6 @@
       <div id="callTypePills" style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;"></div>
     </div>
     <p class="caption">Confidence reflects current sample size. Cold outreach is "directional" because n=79 is enough to read the 12.7% rate as real but not enough to confirm the spread is causal at field-level. At production volume (~1,440 dials/day), all four rows tighten within weeks.</p>
-    <p class="caption">Cold outreach is the largest single bucket (53% of dials in this sample) AND has the lowest booking rate. Volume × rate is where leverage compounds — small execution improvements on cold outreach affect the most calls.</p>
   </section>
 
   <section>
@@ -678,7 +684,7 @@
         <span><span class="chip" style="background: #faeeee;"></span>Pale tint indicates small sample (n=1–4)</span>
         <span><span class="chip" style="background: transparent; border: 1px dashed var(--border);"></span>Empty = no calls in this cell</span>
       </div>
-      <p class="caption">Color coding compares rep performance to the call-type baseline within each call type column. A rep at 19% on a 12.7% baseline shows as above-baseline despite the small absolute number — rep_08 books at 1.5× the cold-outreach baseline. The Overall column is reference only and is intentionally not color-coded, because raw aggregate rates conflate behavioral performance with call mix.</p>
+      <p class="caption">Color coding compares rep performance to the call-type baseline within each call type column.</p>
     </div>
   </section>
 
@@ -706,12 +712,11 @@
   <section>
     <div class="insight">
       <p><strong>What's working in <span id="v2-ct-name">cold outreach</span></strong></p>
-      <p id="v2-insight"></p>
-      <p class="meta">In production, this insight regenerates as data updates. Current text is pre-generated for demo.</p>
+      <div id="v2-insight"></div>
     </div>
   </section>
 
-  <p class="method-note"><span class="info-i">i</span><em>How these behaviors are selected: behaviors shown have absolute differential ≥ 10pts AND base rate ≥ 15% in at least one group (booked or not-booked). Production version evaluates all 23 behaviors in the scoring schema nightly and surfaces rows based on continuous-significance tests at scale rather than fixed thresholds.</em></p>
+  <p class="method-note"><span class="info-i">i</span><em>How these behaviors are selected: behaviors shown are derived from qualitative analysis of transcripts of the respective call type. The values displayed reflect absolute differential ≥ 10pts AND base rate ≥ 15% in at least one group (booked or not-booked) — a heuristic that works for the 150-call sample but filters out rare-but-impactful behaviors. A validated post-pilot version would use statistical significance testing (chi-square or Fisher's exact, with multiple-comparisons correction) instead of fixed thresholds, re-running as new data accumulates. Rare positive behaviors below the base rate floor would surface as candidates under manager review rather than being silently dropped.</em></p>
 
   <section>
     <div class="behavior-header">
@@ -869,10 +874,12 @@ const flaggedReps = [
 ];
 
 const insightByCallType = {
-  cold_outreach: "Within cold outreach (n=79, 10 booked), behaviors that show the strongest signal at this sample are: paraphrasing the prospect's words back (mirroring), proposing a specific time for follow-up, citing specific findings about the restaurant, explicitly building on the prospect's discovery answer (adaptation), and using a proactive third-party reframe. Note that adaptation and mirroring are related but distinct — adaptation can occur without mirroring, and the combination is a stronger signal than either alone (50% of booked cold calls do both vs 19% of not-booked). All findings are 'candidate' at current N — the 10 booked calls aren't enough to confirm causal weight. At production volume, these resolve within weeks.",
-  inbound_followup: "Within inbound leads (n=39, 19 booked), the strongest signals are: discovery questions asked BEFORE pitching (+27pts), proposing specific times rather than open-ended (+27pts), and explicitly building on the prospect's discovery answer (+16pts). Sample is more balanced here (19 vs 20) so signal is cleaner. The pattern: warm prospects book more often when reps slow down to qualify before pitching.",
-  in_flight_followup: "Within re-engagement (n=20, 13 booked, 7 not-booked), sample is too small for confident behavioral comparison within this call type. The dashboard surfaces what's available with explicit insufficient-data labels.",
-  confirmation: "Within demo confirmation (n=9, 7 booked, 2 not-booked), sample is insufficient for behavioral comparison. Production data will populate this view within weeks."
+  cold_outreach: `<p>Within cold outreach (n=79, 10 booked), behaviors that show the strongest signal at this sample are: paraphrasing the prospect's words back (mirroring), proposing a specific time for follow-up, citing specific findings about the restaurant, explicitly building on the prospect's discovery answer (adaptation), and using a proactive third-party reframe. Note that adaptation and mirroring are related but distinct — adaptation can occur without mirroring, and the combination is a stronger signal than either alone (50% of booked cold calls do both vs 19% of not-booked). All findings are "candidate" at current N — the 10 booked calls aren't enough to confirm causal weight. At production volume, these resolve within weeks.</p>
+<p class="insight-meta"><em>In production, this insight regenerates as data updates. Current text is pre-generated for demo.</em></p>`,
+  inbound_followup: `<p>Behaviors that drive booking in inbound leads differ structurally from cold outreach — the rep's job is to qualify and schedule fast, not to create interest or overcome skepticism. The behavior table below shows preliminary behaviors derived from qualitative analysis of inbound transcripts. Values are pending dedicated inbound scoring.</p>
+<p class="insight-meta"><em>In production, this insight regenerates per call type from continuous scoring. Current text is pre-generated for demo.</em></p>`,
+  in_flight_followup: `<p class="insight-meta"><em>In production, this insight regenerates per call type from continuous scoring. The current build does not include behavior derivation for re-engagement calls — the schema for this call type would come from dedicated qualitative analysis of re-engagement transcripts.</em></p>`,
+  confirmation: `<p class="insight-meta"><em>In production, this insight regenerates per call type from continuous scoring. The current build does not include behavior derivation for demo confirmation calls — the schema for this call type would come from dedicated qualitative analysis of demo confirmation transcripts.</em></p>`
 };
 
 const behaviorTable_cold = [
@@ -900,13 +907,20 @@ const behaviorTable_cold = [
 ];
 
 const behaviorTable_inbound = [
+  // OPENING
+  {field: "inbound_action_referenced_specifically", value: "specific",                 phase: "opening",   description: "Did rep open referencing the prospect's exact action (form fill, request, referral)?", schema_preview: true},
+  {field: "stale_lead_handling",                    value: "acknowledged_and_reframed",phase: "opening",   description: "If the lead is old, did rep acknowledge and reframe?", schema_preview: true},
   // DISCOVERY
-  {field: "discovery_question_asked",   value: "before_pitch", booked_rate: 42.1, nb_rate: 15.0, diff: 27.1, n_b: 19, n_nb: 20, confidence: "directional", category: "differentiator"},
-  {field: "rep_used_prospect_answer",   value: "explicit",     booked_rate: 21.1, nb_rate: 5.0,  diff: 16.1, n_b: 19, n_nb: 20, confidence: "directional", category: "possible differentiator"},
-  {field: "prospect_language_mirrored", value: "paraphrased",  booked_rate: 47.4, nb_rate: 35.0, diff: 12.4, n_b: 19, n_nb: 20, confidence: "directional", category: "possible differentiator"},
-  {field: "referral_used",              value: "False",        booked_rate: 89.5, nb_rate: 75.0, diff: 14.5, n_b: 19, n_nb: 20, confidence: "directional", category: "table stakes"},
+  {field: "motivation_question_asked",              value: "asked",                    phase: "discovery", description: "Did rep ask what prompted the prospect's interest?", schema_preview: true},
+  {field: "volume_qualification_done",              value: "explicit",                 phase: "discovery", description: "Did rep qualify fit by volume / order source before pitching?", schema_preview: true},
+  {field: "rapport_moment_created",                 value: "yes",                      phase: "discovery", description: "Did rep build on context the prospect provided?", schema_preview: true},
+  // PITCH
+  {field: "specialist_handoff_framing",             value: "scheduler_framing",        phase: "pitch",     description: "Did rep position as a scheduler ('I'm just the person who schedules meetings') rather than re-pitching?", schema_preview: true},
+  {field: "timing_objection_response",              value: "handled",                  phase: "pitch",     description: "Did rep handle 'I'm busy' / 'not for 6 months' with a fast counter?", schema_preview: true},
+  {field: "pricing_handling",                       value: "transparent_or_deferred",  phase: "pitch",     description: "Did rep handle pricing with proactive transparency or credible specialist deferral (vs. vague deflection)?", schema_preview: true},
   // CLOSE
-  {field: "specific_time_proposed",     value: "specific",     booked_rate: 42.1, nb_rate: 15.0, diff: 27.1, n_b: 19, n_nb: 20, confidence: "directional", category: "differentiator"}
+  {field: "partner_inclusion_handled",              value: "included",                 phase: "close",     description: "When prospect says 'need to check with my partner,' did rep offer to include them?", schema_preview: true},
+  {field: "specific_time_proposed",                 value: "specific",                 phase: "close",     description: "Did rep propose a specific day/time for follow-up?", schema_preview: true}
 ];
 
 const behaviorTables = {
@@ -988,10 +1002,11 @@ const fieldTooltips = {
 };
 
 const confidenceLabels = {
-  confirmed:    { text: "✓ Confirmed",    color: "#10693e", bg: "#d4f4e0", desc: "N≥50 in each cell, signal robust at scale" },
-  directional:  { text: "→ Directional",  color: "#7a4900", bg: "#fff3d4", desc: "10≤N<50, signal real but not yet causal" },
-  candidate:    { text: "? Candidate",    color: "#6b4980", bg: "#f0e6f9", desc: "N<10, surface for tracking; would resolve at scale" },
-  insufficient: { text: "⊘ Insufficient", color: "#777777", bg: "#eeeeee", desc: "N<5, cannot evaluate" }
+  confirmed:      { text: "✓ Confirmed",      color: "#10693e", bg: "#d4f4e0", desc: "N≥50 in each cell, signal robust at scale" },
+  directional:    { text: "→ Directional",    color: "#7a4900", bg: "#fff3d4", desc: "10≤N<50, signal real but not yet causal" },
+  candidate:      { text: "? Candidate",      color: "#6b4980", bg: "#f0e6f9", desc: "N<10, surface for tracking; would resolve at scale" },
+  insufficient:   { text: "⊘ Insufficient",   color: "#777777", bg: "#eeeeee", desc: "N<5, cannot evaluate" },
+  schema_preview: { text: "⊘ Schema preview", color: "#888888", bg: "#f1f1f1", desc: "Behavior shown for context only — pending dedicated scoring." }
 };
 
 const callTypeDisplay = {
@@ -1003,8 +1018,8 @@ const callTypeDisplay = {
 
 const callTypeDefinitions = {
   cold_outreach: "Outbound dial to a prospect with no prior contact. The rep is starting the relationship from scratch.",
-  inbound_followup: "Prospect raised their hand first via form fill, request, or referral. This is the first sales conversation. (Note: this category was created via situational classifier on call transcripts; it doesn't exist in the source data taxonomy.)",
-  in_flight_followup: "A prior conversation already happened — typically a 'try me next week' callback or continued thread from a previous call. The rep is re-engaging an existing thread, not starting fresh. (Note: this category was created via situational classifier on call transcripts; it doesn't exist in the source data taxonomy.)",
+  inbound_followup: "Prospect raised their hand first via form fill, request, or referral. This is the first sales conversation.",
+  in_flight_followup: "A prior conversation already happened — typically a 'try me next week' callback or continued thread from a previous call. The rep is re-engaging an existing thread, not starting fresh.",
   confirmation: "A demo is already scheduled. The call is to confirm details, send the calendar invite, or handle logistics."
 };
 
@@ -1226,6 +1241,20 @@ function setupPillFilter() {
 }
 
 function rowHTML(r) {
+  if (r.schema_preview) {
+    const tip = r.description || fieldTooltips[r.field] || "Field definition not available — check the schema appendix.";
+    return `<tr>
+      <td><span class="field-name">${r.field}<span class="tip">${tip}</span></span></td>
+      <td><span class="value-tag">${r.value}</span></td>
+      <td class="num em-dash">—</td>
+      <td class="num em-dash">—</td>
+      <td class="num em-dash">—</td>
+      <td class="em-dash">—</td>
+      <td class="num em-dash">—</td>
+      <td class="num em-dash">—</td>
+      <td>${pillHTML("schema_preview")}</td>
+    </tr>`;
+  }
   const tip = fieldTooltips[r.field] || "Field definition not available — check the schema appendix.";
   const dCls = r.diff > 5 ? "pos" : (r.diff < -5 ? "neg" : "neutral");
   const dSign = r.diff > 0 ? "+" : "";
@@ -1248,7 +1277,8 @@ function rowHTML(r) {
 function renderView2() {
   // Insight
   document.getElementById("v2-ct-name").textContent = callTypeDisplay[view2State.ct] || view2State.ct;
-  document.getElementById("v2-insight").textContent = insightByCallType[view2State.ct] || "";
+  const insight = insightByCallType[view2State.ct];
+  document.getElementById("v2-insight").innerHTML = typeof insight === "string" ? insight : "";
 
   // Behavior table
   const tbody = document.querySelector("#behavior-table tbody");
@@ -1256,23 +1286,26 @@ function renderView2() {
   if (!rows) {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:24px; color:var(--text-soft); font-style:italic;">${sampleNotes[view2State.ct] || "No data."}</td></tr>`;
   } else if (view2State.grouped) {
-    // Filter by category unless showAll
-    const filtered = view2State.showAll
+    const isSchemaPreview = rows.length && rows[0].schema_preview;
+    // Filter by category unless showAll. Schema preview rows are never filtered.
+    const filtered = (isSchemaPreview || view2State.showAll)
       ? rows
       : rows.filter(r => {
           const c = categorize(r);
           return c === 'differentiator' || c === 'possible differentiator';
         });
-    // Group by phase, sort within group by abs(diff) desc
+    // Group by phase. Use the row's own `phase` for schema-preview rows; otherwise look up via fieldPhase.
     const byPhase = {};
     filtered.forEach(r => {
-      const ph = fieldPhase[r.field] || 'pitch';
+      const ph = r.phase || fieldPhase[r.field] || 'pitch';
       (byPhase[ph] = byPhase[ph] || []).push(r);
     });
     const html = phaseOrder
       .filter(ph => byPhase[ph] && byPhase[ph].length)
       .map(ph => {
-        const sorted = [...byPhase[ph]].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+        const sorted = isSchemaPreview
+          ? byPhase[ph]
+          : [...byPhase[ph]].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
         return `<tr class="phase-row"><td colspan="9">${phaseLabels[ph]}</td></tr>`
           + sorted.map(rowHTML).join("");
       }).join("");
