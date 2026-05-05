@@ -1369,3 +1369,55 @@ Print to stdout when done:
 - "Fix 2 applied: (i) tooltip icons added next to call type labels in headline chart, heatmap headers, and View 2 filter pills"
 
 If any rename can't be located or any tooltip can't be added cleanly, report which and stop.
+
+
+---
+
+## Iteration 8 — Final state corrections (schema provenance + methodology phrasing)
+
+The dashboard's final state addresses a methodology issue not surfaced in earlier iterations: the 23-field behavioral schema was derived from qualitative analysis of cold-outreach transcripts and shouldn't be presented as universal across call types.
+
+The corrections below adjust three things:
+
+1. **Methodology note above the View 2 behavior table** — leads with "behaviors shown are derived from qualitative analysis of transcripts of the respective call type" and replaces the unclear "continuous-significance tests at scale" with concrete language ("statistical significance testing — chi-square or Fisher's exact, with multiple-comparisons correction"). Also adds explicit acknowledgment that the prototype's threshold filters out rare-but-impactful behaviors and notes how production handles them.
+
+2. **AI insight content per call type** — cold outreach gets the original full text (restored after a serialization bug); inbound leads gets short production-language commentary noting that behaviors derived from inbound-specific analysis follow; re-engagement and demo confirmation get minimal production-only notes since no behavior derivation has been done for those call types in the current build.
+
+3. **View 2 inbound behavior table** — replaced the cold-derived behaviors filtered against inbound data with a 10-row preview of inbound-specific behaviors (no scoring values, "⊘ Schema preview" confidence pill). The 10 behaviors come from a preliminary qualitative pass on inbound transcripts and demonstrate where the schema would diverge from cold outreach.
+
+4. **Tooltip cleanup** — removed the "this category was created via situational classifier" sentence from inbound and re-engagement tooltips, keeping only the situational definition.
+
+```markdown
+# Final dashboard state corrections
+
+Apply five fixes:
+
+## Fix 1 — Methodology note rewrite
+
+Replace the methodology note above the View 2 behavior table with:
+
+> *How these behaviors are selected: behaviors shown are derived from qualitative analysis of transcripts of the respective call type. The values displayed reflect absolute differential ≥ 10pts AND base rate ≥ 15% in at least one group (booked or not-booked) — a heuristic that works for the 150-call sample but filters out rare-but-impactful behaviors. Production version uses statistical significance testing (chi-square or Fisher's exact, with multiple-comparisons correction) instead of fixed thresholds, re-running as new data accumulates. Rare positive behaviors below the base rate floor surface as candidates under manager review rather than being silently dropped.*
+
+## Fix 2 — Remove schema provenance callout
+
+The earlier "yellow callout" panel above the call type filter pills explaining schema provenance is removed; the methodology note (Fix 1) handles this framing instead.
+
+## Fix 3 — AI insight per call type
+
+Cold outreach: original full-text insight restored. Inbound: short production-language version mentioning the preview table below. Re-engagement and Demo confirmation: production-only note ("schema for this call type would come from dedicated qualitative analysis").
+
+## Fix 4 — Inbound behavior preview table
+
+Replace the inbound behavior table with this 10-row preview (Opening / Discovery / Pitch / Close):
+
+- Opening: inbound_action_referenced_specifically, stale_lead_handling
+- Discovery: motivation_question_asked, volume_qualification_done, rapport_moment_created
+- Pitch: specialist_handoff_framing, timing_objection_response, pricing_handling
+- Close: partner_inclusion_handled, specific_time_proposed
+
+All numeric columns show em-dashes; Confidence column shows "⊘ Schema preview" pill.
+
+## Fix 5 — Tooltip cleanup
+
+Remove the "this category was created via situational classifier on call transcripts; it doesn't exist in the source data taxonomy" sentence from inbound and re-engagement tooltips. Keep only the situational definition.
+```

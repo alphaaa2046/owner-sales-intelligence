@@ -4,7 +4,17 @@ This is the system prompt used by `analysis/scripts/score_transcripts.py` to sco
 
 The schema captures rep-controlled behaviors organized into 5 phases (Opening, Discovery, Value Proposition, Close, Wrap). Each field is either a categorical value (e.g., `specific | open_ended | not_reached`) or a boolean.
 
-Note: this is the v2 schema. An earlier v1 used 12 fields with mostly binary scoring. v2 expanded the schema after analysis showed binary scoring lost meaningful execution-quality signal — for example, "research hook used: yes/no" doesn't distinguish a generic "I was looking around at restaurants in the area" from a specific "you're showing up #6 for best mexican near me." The v2 categorical values capture that distinction.
+## Important: this schema is cold-outreach-derived
+
+The 23 fields below were derived from qualitative analysis of cold-outreach transcripts — reading 25 calls in detail across booked and not-booked, cataloguing where rep behavior could vary and where outcomes diverged. The schema reflects what matters in cold outreach calls.
+
+**Other call types would use different schemas.** Inbound leads, re-engagement, and demo confirmation calls have structurally different conversational arcs. For example, inbound leads benefit from behaviors like `inbound_action_referenced_specifically` (did rep open with the prospect's exact action), `specialist_handoff_framing` (positioning as scheduler vs. re-pitching), and `partner_inclusion_handled` (offering to include the partner when prospect mentions them) — none of which apply to cold outreach. The dashboard's View 2 surfaces a preview of the inbound schema; full inbound scoring would require running this same scoring pattern with an inbound-derived prompt.
+
+The data pipeline is therefore: classify call type first → use a call-type-specific schema → score transcripts against the appropriate schema for their type.
+
+The scoring schema below is the cold-outreach version and is what produced the values in `analysis/data/behavioral_scored.csv` (which is filtered to cold-outreach calls in production usage; the prototype scores the full 150-call sample for demonstration).
+
+Note: this is the v2 cold-outreach schema. An earlier v1 used 12 fields with mostly binary scoring. v2 expanded the schema after analysis showed binary scoring lost meaningful execution-quality signal — for example, "research hook used: yes/no" doesn't distinguish a generic "I was looking around at restaurants in the area" from a specific "you're showing up #6 for best mexican near me." The v2 categorical values capture that distinction.
 
 ---
 
