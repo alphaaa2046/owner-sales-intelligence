@@ -30,7 +30,7 @@ owner-sales-intelligence/
     ├── queries/                 # description of SQL run against Snowflake
     │   └── README.md            # SQL was ad-hoc; this README describes what the queries did
     └── data/
-        ├── behavioral_scored.csv  # 150 calls scored on the 23-field schema + call type
+        ├── behavioral_scored.csv  # 150 calls scored on cold-outreach schema + call type
         └── README.md              # data provenance
 ```
 
@@ -48,17 +48,21 @@ Both files run on hardcoded data. No live API calls, no environment configuratio
 1. Read `exec_summary.md` (~3 minutes)
 2. Open the dashboard, click through Views 1, 2, 3 (~7 minutes)
 3. Open the brief, switch between 2-3 restaurants in the dropdown (~3 minutes)
-4. Skim `whats_next.md` for the production roadmap (~2 minutes)
+4. Skim `whats_next.md` for next steps including the structured pilot (~2 minutes)
 
 ## How the system works
 
-The pipeline has two stages, both running on transcripts from Owner's Snowflake instance:
+The pipeline has three stages, all running on transcripts from Owner's Snowflake instance:
 
-**Stage 1 — Behavioral scoring.** Each transcript is scored against a 23-field categorical schema (`research_hook_used`, `prospect_language_mirrored`, `commission_math_specific`, etc.) — the rep behaviors that may correlate with booking. The schema and scoring instructions are in `analysis/prompts/behavioral_scoring.md`. The Python script `analysis/scripts/score_transcripts.py` calls the Anthropic API with this prompt and writes results.
+**Stage 1 — Call type classification.** Each transcript is classified into one of four situational categories (cold outreach, inbound follow-up, in-flight follow-up, demo confirmation) based on signals like prior contact, lead source, and prospect-side language. Classifier prompt in `analysis/prompts/call_type_classifier.md`. Script in `analysis/scripts/classify_call_types.py`. Classification happens first because the behavioral analysis below is call-type-specific.
 
-**Stage 2 — Call type classification.** Each transcript is classified into one of four situational categories (cold outreach, inbound follow-up, in-flight follow-up, confirmation) based on signals like prior contact, lead source, and prospect-side language. Classifier prompt in `analysis/prompts/call_type_classifier.md`. Script in `analysis/scripts/classify_call_types.py`.
+**Stage 2 — Behavioral schema derivation (per call type).** For each call type, derive a behavioral schema by qualitative analysis of that call type's transcripts. Read transcripts across booked and not-booked outcomes; catalog where rep behavior could vary; note where outcomes diverged. The result is a list of behavioral fields specific to that call type.
 
-Both stages output to `analysis/data/behavioral_scored.csv` — the master dataset that powers the dashboard's Views 1 and 2.
+The current build includes one fully derived schema (cold outreach, 23 fields) and one preliminary schema (inbound leads, 10 fields). Re-engagement and demo confirmation schemas have not been derived; this is documented as deferred work in `whats_next.md`.
+
+**Stage 3 — Behavioral scoring.** Each transcript is scored against the schema for its call type. The scoring prompt is in `analysis/prompts/behavioral_scoring.md` (currently containing the cold outreach schema). The Python script `analysis/scripts/score_transcripts.py` calls the Anthropic API with this prompt and writes results.
+
+The output is `analysis/data/behavioral_scored.csv` — the master dataset that powers the dashboard's Views 1 and 2.
 
 The Claude Code prompts in `analysis/prompts/dashboard_build.md` and `analysis/prompts/brief_build.md` are the prompts used to generate the HTML deliverables, with the behavioral and call-type data hardcoded into the files at build time.
 
@@ -95,20 +99,25 @@ The scripts read CSVs from disk; they don't connect to Snowflake directly. Expor
 ```bash
 export ANTHROPIC_API_KEY=your_key_here
 
-# Stage 1: behavioral scoring (~10 min for 150 calls)
-python analysis/scripts/score_transcripts.py \
-    --transcripts path/to/transcripts.csv \
-    --metadata path/to/metadata.csv \
-    --output analysis/data/behavioral_scored.csv
-
-# Stage 2: call type classification (~10 min for 150 calls)
+# Stage 1: classify call types (~10 min for 150 calls)
 python analysis/scripts/classify_call_types.py \
     --transcripts path/to/transcripts.csv \
-    --input analysis/data/behavioral_scored.csv \
+    --input path/to/metadata.csv \
+    --output analysis/data/metadata_with_call_type.csv
+
+# Stage 3: behavioral scoring (~10 min for 150 calls)
+# Note: the embedded scoring prompt is the cold-outreach schema. Production
+# would filter to cold-outreach transcripts before scoring, and run separate
+# scoring jobs for other call types using their own derived schemas.
+python analysis/scripts/score_transcripts.py \
+    --transcripts path/to/transcripts.csv \
+    --metadata analysis/data/metadata_with_call_type.csv \
     --output analysis/data/behavioral_scored.csv
 ```
 
-Stage 2 reads the output of Stage 1 and adds a `call_type` column in place. Both scripts include a preflight check that verifies API access before processing begins.
+Stage 2 (schema derivation) is not a script — it's qualitative analysis of transcripts that produces the behavioral_scoring prompt. The cold-outreach version of that prompt is in `analysis/prompts/behavioral_scoring.md`. To derive a schema for a different call type, repeat the qualitative pass on that call type's transcripts and produce a parallel prompt.
+
+Both scripts include a preflight check that verifies API access before processing begins.
 
 ## Data provenance
 
@@ -120,15 +129,31 @@ The transcripts themselves are not in the repo. They live in Owner's Snowflake. 
 
 See `analysis/data/README.md` for full provenance notes.
 
-## A note on call type classification
+## Methodology notes
 
-The source Snowflake data does not include a call type field. The `call_type` column in `behavioral_scored.csv` was produced by a situational classifier I built specifically for this analysis.
+### On call type classification
+
+The source Snowflake data does not include a call type field. The `call_type` column in `behavioral_scored.csv` was produced by a situational classifier built specifically for this analysis.
 
 The classifier went through two iterations:
 - An earlier version produced three categories (cold outreach, warm outreach, demo confirmation), which loosely mapped to standard sales taxonomy.
 - The current version (in `analysis/prompts/call_type_classifier.md`) produces four categories — cold outreach, inbound follow-up, in-flight follow-up, demo confirmation — based on situational signals like prior contact and prospect-side language. Splitting "warm outreach" into inbound vs. in-flight turned out to matter analytically: the behavioral patterns differ meaningfully between the two.
 
 In the dashboard UI, these display as **Cold outreach**, **Inbound leads**, **Re-engagement**, and **Demo confirmation**. The current classifier is the canonical one; the earlier iteration is documented here for context but is not used downstream.
+
+### On the behavioral schema
+
+The 23-field schema embedded in `analysis/prompts/behavioral_scoring.md` was derived from qualitative analysis of cold-outreach transcripts specifically. Reading 25 transcripts in detail across booked and not-booked outcomes, cataloging where rep behavior could vary and where outcomes diverged. The schema reflects what matters in cold outreach calls.
+
+Other call types would benefit from their own schemas. Inbound leads, for example, have behavioral patterns with no cold-outreach equivalent — handling the timing of stale form-fills, framing the rep as a scheduler vs. re-pitching, offering to include a partner who needs to be consulted. The dashboard's View 2 surfaces a 10-field preview of an inbound-leads schema; full inbound scoring would require deriving the schema in detail and running it as a parallel scoring job.
+
+Re-engagement and demo confirmation schemas have not been derived. Both call types are flagged in the dashboard with production-language placeholders rather than fabricated commentary; they're listed in `whats_next.md` as deferred work.
+
+### On the threshold heuristic
+
+The dashboard's View 2 surfaces behaviors meeting two thresholds: absolute differential ≥ 10 percentage points AND base rate ≥ 15% in at least one group (booked or not-booked). This works for the 150-call sample but has a known limitation: rare-but-impactful behaviors get filtered out. A behavior at 5% base rate with a 30pt differential — say, a creative move only one rep does that consistently lands — would be hidden by the floor.
+
+A validated post-pilot version would replace fixed thresholds with statistical significance testing (chi-square or Fisher's exact, with multiple-comparisons correction) and surface rare positive behaviors as "candidates under manager review" rather than dropping them. The dashboard's methodology note acknowledges this directly.
 
 ## Questions
 

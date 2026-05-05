@@ -58,18 +58,34 @@ The prototype demonstrates the system on a 150-call sample. Several capabilities
 
 ---
 
-### 6. Scoring schema improvements based on pilot feedback
+### 6. Per-call-type schema derivation (inbound leads first, then re-engagement and demo confirmation)
 
-**What.** V2 of the behavioral scorecard — quality dimensions on every field where binary or categorical scoring loses execution-quality signal, plus prompt refinement based on which scored behaviors actually correlate with downstream outcomes.
+**What.** Derive a complete behavioral schema for each call type the system handles, starting with inbound leads (where the dashboard currently shows a 10-field preview), then re-engagement and demo confirmation. Each schema captures rep behaviors specific to that call type's conversational dynamic.
 
-**How.** Run the v2 schema in shadow mode alongside the existing one for 30 days. Compare manager judgment on a stratified sample of calls. Refine prompts where disagreement is high. Promote v2 to primary once it outperforms v1 on the manager-validation set.
+**How.** For each call type, read 25-30 transcripts in detail across booked and not-booked outcomes. Catalog where rep behavior could vary; note where outcomes diverged. Translate the findings into a structured scoring prompt parallel to the cold outreach prompt in `analysis/prompts/behavioral_scoring.md`. Run the new prompt against the call type's transcripts to score them. Surface the resulting differentials in the dashboard's View 2 alongside cold outreach.
 
-**Why.** The current scorecard treats some behaviors as binary that have meaningful quality variation (e.g., "specific time proposed" doesn't distinguish "Tuesday at 2pm" from "sometime next week"). Improving scoring quality is the lowest-effort way to surface stronger behavioral signals as the data scales.
+The inbound leads preview already documents 10 candidate behaviors (e.g., `inbound_action_referenced_specifically`, `specialist_handoff_framing`, `partner_inclusion_handled`) — these would be validated and refined in this pass before scoring.
+
+In parallel: refine the cold outreach schema where binary scoring loses execution-quality signal (e.g., "specific time proposed" doesn't distinguish "Tuesday at 2pm" from "sometime next week"). Run refined prompts in shadow mode against the existing schema; compare to manager judgment on a stratified sample; promote when refined version outperforms.
+
+**Why.** Cold outreach is the highest-volume, lowest-yielding call type — the right place to start. But applying cold outreach coaching to inbound leads is a category mistake. Cold outreach is a hunter motion (create interest, overcome skepticism, close to demo). Inbound is a qualifier motion (the prospect already raised their hand; the rep's job is to qualify fit and schedule fast). The behaviors that matter are different. Until each call type has its own derived schema, the dashboard's coaching guidance for non-cold call types is at best partial and at worst misleading.
+
+---
+
+### 7. Restaurant-attribute-to-phase mapping (intelligent default selection in the brief)
+
+**What.** Replace the prototype's hardcoded default-expanded-phase logic with a learned mapping from restaurant attributes (cuisine, location count, third-party platforms, fit tier, lead source, prior interactions, etc.) to which call phase has the highest leverage for a given restaurant.
+
+**How.** Same analytical engine as behavioral scoring, with the input and target swapped. Per-call categorical evaluation of restaurant attributes against ground-truth booking outcomes; aggregate to surface which phase carries the most leverage for each restaurant attribute combination. Start with a rule-based V1 encoding the heuristics already in the prototype (e.g., "cold outreach + 2+ third-party platforms → expand Pitch with third-party handler"); promote to a learned predictor as outcomes accumulate. Managers retain an override layer to align defaults with what they're emphasizing in coaching that quarter.
+
+This builds on top of Owner's existing concept-fit and pickup-prediction work rather than duplicating it: those models predict WHO will book; this layer predicts WHERE the rep should focus during the call. Different question, different target, complementary intelligence.
+
+**Why.** The prototype's defaults are my judgment about which phase has the highest leverage for each restaurant. They're informed but not validated against booking outcomes. A learned mapping makes the brief's intelligence adaptive — every booking outcome refines what gets shown to the next rep on a similar restaurant. Without this layer, the brief is static; with it, the brief gets sharper over time the same way the dashboard does.
 
 ---
 
 ## Why these were deferred
 
-Each item above was a deliberate scope decision, not an oversight. Items 1, 4, and 5 require organizational coordination outside the case study scope. Items 2 and 3 require production engineering integration. Item 6 depends on running the system at scale long enough to know which scorecard fields need refinement.
+Each item above was a deliberate scope decision, not an oversight. Items 1, 4, and 5 require organizational coordination outside the case study scope. Items 2 and 3 require engineering integration. Items 6 and 7 require either qualitative analytical work (per-call-type schema derivation) or accumulated outcome data (restaurant-attribute mapping) that can only happen as the system runs at scale.
 
-The prototype shows the system's intelligence layer (scoring, classification, surfacing) working end-to-end on a snapshot. The next steps move it from snapshot to live, from analytical to operational, and from leading indicators to revenue impact.
+The prototype shows the system's intelligence layer (scoring, classification, surfacing) working end-to-end on a snapshot. The next steps move it from snapshot to validated, from analytical to operational, and from leading indicators to revenue impact.
