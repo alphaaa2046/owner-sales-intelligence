@@ -5,10 +5,24 @@ Reads transcripts (with associated metadata) from a CSV, calls the Anthropic API
 with a structured scoring prompt for each transcript, and writes one row per call
 with all 23 behavioral fields populated.
 
-This is the canonical scoring script that produced the behavioral data in
-`analysis/data/behavioral_scored.csv`. It is the v2 schema -- expanded from an
-earlier 12-field v1 schema after analysis showed binary scoring lost meaningful
-execution-quality signal.
+This is the canonical scoring script that produced the cold-outreach behavioral
+data in `analysis/data/behavioral_scored.csv`.
+
+IMPORTANT: the 23-field schema embedded in this script is COLD-OUTREACH-DERIVED.
+The fields were derived from qualitative analysis of cold-outreach transcripts
+specifically. Other call types (inbound leads, re-engagement, demo confirmation)
+would benefit from their own schemas derived from analysis of their respective
+transcripts. For example, an inbound-leads schema would include behaviors like
+`inbound_action_referenced_specifically`, `specialist_handoff_framing`, and
+`partner_inclusion_handled` — none of which apply to cold outreach.
+
+The recommended data pipeline is:
+  1. Classify call type first (run classify_call_types.py)
+  2. Filter transcripts by call type
+  3. Run this script (or a call-type-specific version) on each subset
+
+The current build only includes the cold-outreach schema. Production would
+maintain separate schemas per call type with corresponding scoring runs.
 
 Usage:
     export ANTHROPIC_API_KEY=your_key_here
@@ -93,6 +107,10 @@ BOOL_FIELDS = {
 }
 
 # ------------------------- Scoring prompt -------------------------
+
+# NOTE: this prompt was derived from qualitative analysis of cold-outreach
+# transcripts. It is the cold-outreach schema. Other call types should use
+# call-type-specific schemas; see module docstring for context.
 
 SCORING_SYSTEM = """You are scoring an Owner.com sales call transcript on 23 rep-controlled behavioral elements organized into 5 phases.
 
