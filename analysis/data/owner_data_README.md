@@ -9,10 +9,12 @@ The master dataset that powers the dashboard. 150 rows, one per call.
 Source transcripts come from Owner's Snowflake instance: `DEMO_DB.AI_CASE.CALL_TRANSCRIPTS`. The transcripts themselves are not in this repo; the SQL used to pull them is at `analysis/queries/owner_calls.sql`.
 
 This CSV is produced by running:
-1. `analysis/scripts/score_transcripts.py` (uses prompt `analysis/prompts/behavioral_scoring.md`)
-2. `analysis/scripts/classify_call_types.py` (uses prompt `analysis/prompts/call_type_classifier.md`)
+1. `analysis/scripts/classify_call_types.py` (uses prompt `analysis/prompts/call_type_classifier.md`) — adds `call_type` field to each call
+2. `analysis/scripts/score_transcripts.py` (uses prompt `analysis/prompts/behavioral_scoring.md`) — scores transcripts on the cold-outreach behavioral schema
 
 Both scripts call the Anthropic API and write their outputs to this CSV.
+
+The 150-call sample includes all four call types. The 23-field behavioral schema embedded in `behavioral_scoring.md` is **cold-outreach-derived** — see the methodology notes in the main README. Production would maintain separate schemas per call type. The behavioral fields in this CSV reflect the cold-outreach schema applied across the full 150-call sample for prototype demonstration.
 
 ### Schema
 
@@ -59,12 +61,12 @@ Both scripts call the Anthropic API and write their outputs to this CSV.
 
 ### Reproducing the data
 
-To regenerate the CSV from scratch (assuming Snowflake access and an Anthropic API key):
+To regenerate the CSV from scratch (assuming an Anthropic API key and CSV exports of the source transcripts):
 
 ```bash
 export ANTHROPIC_API_KEY=your_key_here
-python ../scripts/score_transcripts.py
-python ../scripts/classify_call_types.py
+python ../scripts/classify_call_types.py    # Stage 1: classify call types
+python ../scripts/score_transcripts.py      # Stage 2: score on cold-outreach schema
 ```
 
-Each script takes ~10 minutes for 150 calls. The two stages are independent and can be run in either order, but both write to the same CSV so running them sequentially is cleaner.
+Each script takes ~10 minutes for 150 calls. Run classification first; the call_type field is read by downstream tooling. The current scoring step uses the cold-outreach schema regardless of the call's actual type — the prototype scores the full sample for demonstration. Production would filter to cold-outreach calls before scoring, and run separate scoring jobs for other call types using their own derived schemas.
